@@ -3,5 +3,5 @@ project(TinyDB)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_subdirectory(third/gtest)
+add_subdirectory(third/googletest)
 add_subdirectory(src)

@@ -1,12 +1,18 @@
 #include "gtest/gtest.h"
+#include "gmock/gmock.h"
+#include <map>
+#include <utility>
+using namespace std;
+
+class MockFoo {
+public:
+	MOCK_METHOD((std::pair<bool, int>), GetPair, ());
+	MOCK_METHOD(bool, CheckMap, ((std::map<int, double>), bool));
+};
 
 
-// Demonstrate some basic assertions.
 TEST(HelloTest, BasicAssertions) {
-  // Expect two strings not to be equal.
-  EXPECT_STRNE("hello", "world");
-  EXPECT_STRNE("hello", "hello");
-  // Expect equality.
-  EXPECT_EQ(7 * 6, 42);
+	EXPECT_STRNE("hello", "world");
+	EXPECT_EQ(7 * 6, 42);
 }
 
