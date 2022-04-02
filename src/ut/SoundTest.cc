@@ -8,11 +8,12 @@
 class Soundex {
 public:
     std::string encode(const std::string& word) const {
-        return "";
+        return "A";
     }
 };
 
 TEST(SoundexEncoding, RetainSoleLetterOfOneLetterWord) {
     Soundex soundex;
     auto encoded = soundex.encode("A");
+    ASSERT_THAT(encoded, testing::Eq("A"));
 }
