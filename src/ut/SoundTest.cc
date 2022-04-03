@@ -1,4 +1,5 @@
 #include "gmock/gmock.h"
+using ::testing::Eq;
 
 /*
     {测试用例名称, 测试的描述性名称}
@@ -15,5 +16,5 @@ public:
 TEST(SoundexEncoding, RetainSoleLetterOfOneLetterWord) {
     Soundex soundex;
     auto encoded = soundex.encode("A");
-    ASSERT_THAT(encoded, testing::Eq("A"));
+    ASSERT_THAT(encoded, Eq("A"));
 }
