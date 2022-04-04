@@ -1,2 +1,2 @@
 add_subdirectory(storage)
-add_subdirectory(ut)
+add_subdirectory(soundex)

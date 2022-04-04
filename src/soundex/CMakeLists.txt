@@ -9,8 +9,8 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 file(GLOB UT_SRC *.h *.cc)
 
 add_executable(
-  hello_test
+  soundex
   ${UT_SRC}
 )
 
-target_link_libraries(hello_test gtest gmock)
+target_link_libraries(soundex gtest gmock)
