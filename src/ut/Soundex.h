@@ -48,20 +48,32 @@ private:
 
     std::string encodedDigits(const std::string& word) const {
         std::string encoding;
+        encodeHead(encoding, word);
+        encodeTail(encoding, word);
+        return encoding;
+    }
+    
+    void encodeHead(std::string& encoding, const std::string& word) const {
         encoding += encodedDigit(word.front());
+    }
 
-        for (auto letter: word) {
-            if (isComplete(encoding)) {
-                break;
-            }
-
-            auto digit = encodedDigit(letter);
-            if (digit != NotADigit && digit != lastDigit(encoding)) {
-                encoding += digit;
+    void encodeTail(std::string& encoding, const std::string& word) const {
+        for (auto i = 1u; i < word.length(); i++) {
+            if (!isComplete(encoding)) {
+                encodeLetter(encoding, word[i], word[i-1]);
             }
         }
+    }
 
-        return encoding;
+    void encodeLetter(std::string& encoding, char letter, char lastLetter) const {
+        auto digit = encodedDigit(letter);
+        if (digit != NotADigit && (digit != lastDigit(encoding) || isVowel(lastLetter))) {
+            encoding += digit;
+        }
+    }
+
+    bool isVowel(char letter) const {
+        return std::string("aeiouy").find(lower(letter)) != std::string::npos;
     }
 
     std::string lastDigit(const std::string& encoding) const {
