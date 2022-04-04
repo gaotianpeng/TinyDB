@@ -1,31 +1,95 @@
 #ifndef __UT_SOUNDEX_H
 #define __UT_SOUNDEX_H
+#include <string>
+#include <unordered_map>
 /*
-    一、测试驱动开发
-        1）写个测试
-        2）保定它通过
-        3）接着重构设计
-
-    二 TDD的三条规则
-        1）只在为了使失败测试通过时才编写产品代码
-        2）当测试刚好失败时，停止继续编写. 编译失败也是失败
-        3）只编写刚好能让一个失败测试通过的产品代码
+    将单词编码为一个字母和三个数字
+    1）保留每一个字母。丢掉所有出现的a e i o u y h w
+    2）以数字来代替辅音(第一个字母除外)
+        b f p v: 1
+        c g j k q s x z: 2
+        d t: 3
+        i: 4
+        m n: 5
+        r: 6
+    3）如果相邻字母编码相同，用一个数字表示它们即可。同样，如果出现两个编码相同的字母，且它们被h或w隔开，
+        也这样处理；但如果被元音隔开，就要编码两次。这条规则同样适用于第一个字母
+    4）当得到一个字母和三个数字时，停止处理。如果需要，补0以对齐
 */
 
+class Soundex {
+public:
+    std::string encode(const std::string& word) const {
+        return zeroPad(upperFront(head(word)) + tail(encodedDigits(word)));
+    }
 
-/*
-    {测试用例名称, 测试的描述性名称}
-    测试用例(test case): 是一些能共享数据和子程序的测试集合
-*/
+    std::string encodedDigit(char letter) const {
+        const std::unordered_map<char, std::string> encodings {
+            {'b', "1"}, {'f', "1"}, {'p', "1"},{'v', "1"},
+            {'c', "2"}, {'g', "2"}, {'j', "2"},{'k', "2"}, {'q', "2"}, 
+            {'d', "3"}, {'t', "3"},
+            {'l', "4"},
+            {'m', "5"}, {'n', "5"},
+            {'r', "6"}
+        };
 
-/*
-    重构: 是一种代码改写，特点是在保持现有行为不变的前提下改进设计
-        重构的时候，不仅要审阅产品代码，还要审阅测试
-    增量性: 可以避开由一次编写而成的大量且复杂的代码产生的错误
-*/
+        auto it = encodings.find(lower(letter));
+        return it == encodings.end() ? NotADigit : it->second;
+    }
 
-/*
-    TDD: 在信息不完全的情况下，依然可以向前推进，并且可以得到新信息后级早纠正之前的代码
-*/
+private:
+    std::string upperFront(const std::string& string) const {
+        return std::string(1, std::toupper(static_cast<unsigned char>(string.front())));
+    }
+
+    std::string head(const std::string& word) const {
+        return word.substr(0, 1);
+    }
+
+    std::string encodedDigits(const std::string& word) const {
+        std::string encoding;
+        encoding += encodedDigit(word.front());
+
+        for (auto letter: word) {
+            if (isComplete(encoding)) {
+                break;
+            }
+
+            auto digit = encodedDigit(letter);
+            if (digit != NotADigit && digit != lastDigit(encoding)) {
+                encoding += digit;
+            }
+        }
+
+        return encoding;
+    }
+
+    std::string lastDigit(const std::string& encoding) const {
+        if (encoding.empty()) {
+            return NotADigit;
+        }
+        return std::string(1, encoding.back());
+    }
+
+    bool isComplete(const std::string& encoding) const {
+        return encoding.length() == MaxCodeLength;
+    }
+
+    std::string tail(const std::string& word) const {
+        return word.substr(1);
+    }
+
+    std::string zeroPad(const std::string& word) const {
+        auto zerosNeeded = MaxCodeLength - word.length();
+        return word + std::string(zerosNeeded, '0');
+    }
+
+    char lower(char c) const {
+        return std::tolower(static_cast<unsigned char>(c));
+    }
+
+    static const size_t MaxCodeLength {4};
+    const std::string NotADigit{"*"};
+};
 
 #endif // __UT_SOUNDEX_H
